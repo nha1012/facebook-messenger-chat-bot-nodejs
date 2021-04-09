@@ -1,19 +1,26 @@
 require("dotenv").config();
+const messagesData = require('../../messages.json')
 import request from "request";
 
 let postWebhook = (req, res) =>{
     // Parse the request body from the POST
     let body = req.body;
+
     // Check the webhook event is from a Page subscription
     if (body.object === 'page') {
+
         // Iterate over each entry - there may be multiple if batched
         body.entry.forEach(function(entry) {
+
             // Gets the body of the webhook event
             let webhook_event = entry.messaging[0];
             console.log(webhook_event);
+
+
             // Get the sender PSID
             let sender_psid = webhook_event.sender.id;
             console.log('Sender PSID: ' + sender_psid);
+
             // Check if the event is a message or postback and
             // pass the event to the appropriate handler function
             if (webhook_event.message) {
@@ -21,23 +28,30 @@ let postWebhook = (req, res) =>{
             } else if (webhook_event.postback) {
                 handlePostback(sender_psid, webhook_event.postback);
             }
+
         });
+
         // Return a '200 OK' response to all events
         res.status(200).send('EVENT_RECEIVED');
+
     } else {
         // Return a '404 Not Found' if event is not from a page subscription
         res.sendStatus(404);
     }
 };
+
 let getWebhook = (req, res) => {
     // Your verify token. Should be a random string.
     let VERIFY_TOKEN = process.env.MY_VERIFY_FB_TOKEN;
+
     // Parse the query params
     let mode = req.query['hub.mode'];
     let token = req.query['hub.verify_token'];
     let challenge = req.query['hub.challenge'];
+
     // Checks if a token and mode is in the query string of the request
     if (mode && token) {
+
         // Checks the mode and token sent is correct
         if (mode === 'subscribe' && token === VERIFY_TOKEN) {
 
@@ -52,12 +66,60 @@ let getWebhook = (req, res) => {
     }
 };
 
+// Handles messages events
+// function handleMessage(sender_psid, received_message) {
+//     let response;
+//
+//     // Check if the message contains text
+//     if (received_message.text) {
+//
+//         // Create the payload for a basic text message
+//         response = {
+//             "text": `You sent the message: "${received_message.text}". Now send me an image!`
+//         }
+//     } else if (received_message.attachments) {
+//
+//     // Gets the URL of the message attachment
+//     let attachment_url = received_message.attachments[0].payload.url;
+//         response = {
+//             "attachment": {
+//                 "type": "template",
+//                 "payload": {
+//                     "template_type": "generic",
+//                     "elements": [{
+//                         "title": "Is this the right picture?",
+//                         "subtitle": "Tap a button to answer.",
+//                         "image_url": attachment_url,
+//                         "buttons": [
+//                             {
+//                                 "type": "postback",
+//                                 "title": "Yes!",
+//                                 "payload": "yes",
+//                             },
+//                             {
+//                                 "type": "postback",
+//                                 "title": "No!",
+//                                 "payload": "no",
+//                             }
+//                         ],
+//                     }]
+//                 }
+//             }
+//         }
+//
+// }
+//
+// // Sends the response message
+//     callSendAPI(sender_psid, response);
+// }
 
 // Handles messaging_postbacks events
 function handlePostback(sender_psid, received_postback) {
     let response;
+
     // Get the payload for the postback
     let payload = received_postback.payload;
+
     // Set the response based on the postback payload
     if (payload === 'yes') {
         response = { "text": "Thanks!" }
@@ -93,6 +155,9 @@ function callSendAPI(sender_psid, response) {
     });
 }
 
+// function firstTrait(nlp, name) {
+//     return nlp && nlp.entities && nlp.entities[name] && nlp.entities[name][0];
+// }
 
 function firstTrait(nlp, name) {
     return nlp && nlp.entities && nlp.traits[name] && nlp.traits[name][0];
@@ -101,25 +166,69 @@ function firstTrait(nlp, name) {
 function handleMessage(sender_psid, message) {
     //handle message for react, like press like button
     // id like button: sticker_id 369239263222822
-    const messageText = message.text;
-    console.log('message');
-    console.log(message);
-    console.log(JSON.parse(message));
-    // console.log("message"+message);
-    switch (messageText) {
-        case "Hi"||"hi":
-            callSendAPI(sender_psid,`Chào mừng bạn đã đến với dịch vụ của chúng tôi` );
-            break;
-        case "Chủ"||"Nhã":
-            callSendAPI(sender_psid,`Nhã là chủ ` );
-            break;
-    
-        default:
-             callSendAPI(sender_psid,`Tôi không hiểu bạn nói gì, tôi xin lỗi` );
-            break;
+    if( message && message.attachments && message.attachments[0].payload){
+        callSendAPI(sender_psid, "Thank you for watching my video !!!");
+        callSendAPIWithTemplate(sender_psid);
+        return;
     }
+    messagesData.forEach((name, index) => {
+        let entity = firstTrait(message.nlp, name.tinNhan);
+        if (entity && entity.confidence > 0.8) {
+            for (let i = index; i < index + 10; i++) {
+                if (messagesData[i].traLoi) {
+                    return callSendAPI(sender_psid, messagesData[i].traLoi);                
+                }
+                return callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì');            
+            }
+        }
+    });
+    return callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì');
 }
 
+let callSendAPIWithTemplate = (sender_psid) => {
+    // document fb message template
+    // https://developers.facebook.com/docs/messenger-platform/send-messages/templates
+    let body = {
+        "recipient": {
+            "id": sender_psid
+        },
+        "message": {
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "generic",
+                    "elements": [
+                        {
+                            "title": "Want to build sth awesome?",
+                            "image_url": "https://www.nexmo.com/wp-content/uploads/2018/10/build-bot-messages-api-768x384.png",
+                            "subtitle": "Watch more videos on my youtube channel ^^",
+                            "buttons": [
+                                {
+                                    "type": "web_url",
+                                    "url": "https://bit.ly/subscribe-haryphamdev",
+                                    "title": "Watch now"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    };
+
+    request({
+        "uri": "https://graph.facebook.com/v6.0/me/messages",
+        "qs": { "access_token": process.env.FB_PAGE_TOKEN },
+        "method": "POST",
+        "json": body
+    }, (err, res, body) => {
+        if (!err) {
+            // console.log('message sent!')
+        } else {
+            console.error("Unable to send message:" + err);
+        }
+    });
+};
 
 module.exports = {
   postWebhook: postWebhook,
