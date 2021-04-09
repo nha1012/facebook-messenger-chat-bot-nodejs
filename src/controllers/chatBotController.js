@@ -104,11 +104,7 @@ function firstTrait(nlp, name) {
 function handleMessage(sender_psid, message) {
     //handle message for react, like press like button
     // id like button: sticker_id 369239263222822
-
-    if( message && message.attachments && message.attachments[0].payload){
-        callSendAPI(sender_psid, "Thank you for watching my video !!!");
-        return;
-    }
+    console.log(message);
 
     let entitiesArr = [ "wit$greetings", "wit$thanks", "wit$bye" ];
     let entityChosen = "";
@@ -123,6 +119,9 @@ function handleMessage(sender_psid, message) {
         //default
         callSendAPI(sender_psid,`Tôi không hiểu bạn nói gì, tôi xin lỗi` );
     }else{
+        if (message.text ==="Nhã") {
+           callSendAPI(sender_psid,'Nhã là chủ');
+        }
        if(entityChosen === "wit$greetings"){
            //send greetings message
            callSendAPI(sender_psid,'Hi there! This bot is created by Hary Pham. Watch more videos on HaryPhamDev Channel!');
