@@ -104,38 +104,41 @@ function firstTrait(nlp, name) {
 function handleMessage(sender_psid, message) {
     //handle message for react, like press like button
     // id like button: sticker_id 369239263222822
-    console.log("message"+message);
+    console.log('message');
+    console.log(message);
+    console.log(JSON.parse(message));
+    // console.log("message"+message);
 
-    let entitiesArr = [ "wit$greetings", "wit$thanks", "wit$bye" ];
-    let entityChosen = "";
-    entitiesArr.forEach((name) => {
-        console.log(name);
-        let entity = firstTrait(message.nlp, name);
-        if (entity && entity.confidence > 0.8) {
-            entityChosen = name;
-        }
-    });
+    // let entitiesArr = [ "wit$greetings", "wit$thanks", "wit$bye" ];
+    // let entityChosen = "";
+    // entitiesArr.forEach((name) => {
+    //     console.log(name);
+    //     let entity = firstTrait(message.nlp, name);
+    //     if (entity && entity.confidence > 0.8) {
+    //         entityChosen = name;
+    //     }
+    // });
 
-    if(entityChosen === ""){
-        //default
-        callSendAPI(sender_psid,`Tôi không hiểu bạn nói gì, tôi xin lỗi` );
-    }else{
-        if (message.text ==="Nhã") {
-           callSendAPI(sender_psid,'Nhã là chủ');
-        }
-       if(entityChosen === "wit$greetings"){
-           //send greetings message
-           callSendAPI(sender_psid,'Hi there! This bot is created by Hary Pham. Watch more videos on HaryPhamDev Channel!');
-       }
-       if(entityChosen === "wit$thanks"){
-           //send thanks message
-           callSendAPI(sender_psid,`You 're welcome!`);
-       }
-        if(entityChosen === "wit$bye"){
-            //send bye message
-            callSendAPI(sender_psid,'bye-bye!');
-        }
-    }
+    // if(entityChosen === ""){
+    //     //default
+    //     callSendAPI(sender_psid,`Tôi không hiểu bạn nói gì, tôi xin lỗi` );
+    // }else{
+    //     if (message.text ==="Nhã") {
+    //        callSendAPI(sender_psid,'Nhã là chủ');
+    //     }
+    //    if(entityChosen === "wit$greetings"){
+    //        //send greetings message
+    //        callSendAPI(sender_psid,'Hi there! This bot is created by Hary Pham. Watch more videos on HaryPhamDev Channel!');
+    //    }
+    //    if(entityChosen === "wit$thanks"){
+    //        //send thanks message
+    //        callSendAPI(sender_psid,`You 're welcome!`);
+    //    }
+    //     if(entityChosen === "wit$bye"){
+    //         //send bye message
+    //         callSendAPI(sender_psid,'bye-bye!');
+    //     }
+    // }
 }
 
 
