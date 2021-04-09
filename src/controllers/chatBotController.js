@@ -104,11 +104,12 @@ function firstTrait(nlp, name) {
 function handleMessage(sender_psid, message) {
     //handle message for react, like press like button
     // id like button: sticker_id 369239263222822
-    console.log(message);
+    console.log("message"+message);
 
     let entitiesArr = [ "wit$greetings", "wit$thanks", "wit$bye" ];
     let entityChosen = "";
     entitiesArr.forEach((name) => {
+        console.log(name);
         let entity = firstTrait(message.nlp, name);
         if (entity && entity.confidence > 0.8) {
             entityChosen = name;
