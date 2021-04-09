@@ -155,14 +155,6 @@ function callSendAPI(sender_psid, response) {
     });
 }
 
-// function firstTrait(nlp, name) {
-//     return nlp && nlp.entities && nlp.entities[name] && nlp.entities[name][0];
-// }
-
-function firstTrait(nlp, name) {
-    return nlp && nlp.entities && nlp.traits[name] && nlp.traits[name][0];
-}
-
 function handleMessage(sender_psid, message) {
     //handle message for react, like press like button
     // id like button: sticker_id 369239263222822
@@ -173,8 +165,7 @@ function handleMessage(sender_psid, message) {
         return;
     }
     messagesData.forEach((name, index) => {
-        let entity = firstTrait(message.nlp, name.tinNhan);
-        if (entity && entity.confidence > 0.8) {
+        if (message.text === name.tinNhan) {
             return callSendAPI(sender_psid, messagesData[index+1].traLoi);                
         }
     });
