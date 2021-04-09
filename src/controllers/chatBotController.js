@@ -166,6 +166,7 @@ function firstTrait(nlp, name) {
 function handleMessage(sender_psid, message) {
     //handle message for react, like press like button
     // id like button: sticker_id 369239263222822
+    console.log(message);
     if( message && message.attachments && message.attachments[0].payload){
         callSendAPI(sender_psid, "Thank you for watching my video !!!");
         callSendAPIWithTemplate(sender_psid);
@@ -174,15 +175,10 @@ function handleMessage(sender_psid, message) {
     messagesData.forEach((name, index) => {
         let entity = firstTrait(message.nlp, name.tinNhan);
         if (entity && entity.confidence > 0.8) {
-            for (let i = index; i < index + 10; i++) {
-                if (messagesData[i].traLoi) {
-                    return callSendAPI(sender_psid, messagesData[i].traLoi);                
-                }
-                return callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì');            
-            }
+            return callSendAPI(sender_psid, messagesData[index+1].traLoi);                
         }
     });
-    return callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì');
+    return callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì.');
 }
 
 let callSendAPIWithTemplate = (sender_psid) => {
