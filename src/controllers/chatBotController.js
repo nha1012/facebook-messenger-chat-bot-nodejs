@@ -1,5 +1,5 @@
 require("dotenv").config();
-const messagesData = require('../../messages.json')
+// const messagesData = require('../../messages.json')
 import request from "request";
 
 let postWebhook = (req, res) =>{
@@ -163,13 +163,21 @@ function handleMessage(sender_psid, message) {
         callSendAPIWithTemplate(sender_psid);
         return;
     }
-    messagesData.forEach((name, index) => {
-        if (name.tinNhan===message.text) {
-            return callSendAPI(sender_psid, messagesData[index+1].traLoi);                
-        }
-        return callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì.');
-    });
-    return callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì.');
+    switch (message.text) {
+        case "Nhã ơi"||"Anh ơi":
+            callSendAPI(sender_psid, 'Chi');
+            break;
+        default:
+            callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì.')
+            break;
+    }
+    // messagesData.forEach((name, index) => {
+    //     if (name.tinNhan===message.text) {
+    //         return callSendAPI(sender_psid, messagesData[index+1].traLoi);                
+    //     }
+    //     return callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì.');
+    // });
+    // return callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì.');
 }
 
 let callSendAPIWithTemplate = (sender_psid) => {
