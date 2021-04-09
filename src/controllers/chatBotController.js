@@ -164,7 +164,7 @@ function handleMessage(sender_psid, message) {
         return;
     }
     messagesData.forEach((name, index) => {
-        if (name.tinNhan.includes(message.text)) {
+        if (name.tinNhan===message.text) {
             return callSendAPI(sender_psid, messagesData[index+1].traLoi);                
         }
         return callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì.');
