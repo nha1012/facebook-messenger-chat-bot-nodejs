@@ -158,16 +158,16 @@ function callSendAPI(sender_psid, response) {
 function handleMessage(sender_psid, message) {
     //handle message for react, like press like button
     // id like button: sticker_id 369239263222822
-    console.log(message);
     if( message && message.attachments && message.attachments[0].payload){
         callSendAPI(sender_psid, "Thank you for watching my video !!!");
         callSendAPIWithTemplate(sender_psid);
         return;
     }
     messagesData.forEach((name, index) => {
-        if (message.text === name.tinNhan) {
+        if (name.tinNhan.includes(message.text)) {
             return callSendAPI(sender_psid, messagesData[index+1].traLoi);                
         }
+        return callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì.');
     });
     return callSendAPI(sender_psid, 'Bot anh còn hơi ngu, đéo hiểu em nói gì.');
 }
